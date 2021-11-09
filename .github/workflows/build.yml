@@ -1,0 +1,19 @@
+name: Build and release
+
+on:
+  workflow_run:
+    workflows: ["CI"]
+    branches: [master]
+    types:
+      - completed
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2
+      - name: Build
+        run: docker build . --file Dockerfile.build
+      - name: Push
+        run: echo "Not implemented"
