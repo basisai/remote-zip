@@ -1,13 +1,14 @@
 {
-  "name": "esbuild-quickstart",
-  "version": "1.0.0",
+  "name": "remote-zip",
+  "version": "0.1.0",
   "main": "index.js",
   "module": "lib/index.js",
   "types": "lib/index.d.ts",
-  "author": "Ng Guoyou <gyng@users.noreply.github.com>",
+  "author": "Ng Guoyou <guoyou@basis-ai.com>",
   "license": "MIT",
   "scripts": {
     "d": "WATCH=1 yarn build",
+    "d:server": "http-server fixtures",
     "build": "rm -rf lib/* && yarn ts-types && node ./esbuild.js",
     "lint": "yarn lint:prettier && yarn lint:eslint",
     "lint:fix": "yarn lint:prettier:fix && yarn lint:eslint:fix",
@@ -22,8 +23,10 @@
     "ts-types": " tsc --emitDeclarationOnly --outDir lib"
   },
   "devDependencies": {
+    "@types/http-server": "^0.12.1",
     "@types/jest": "^27.0.2",
     "@types/node": "^16.11.7",
+    "@types/pako": "^1.0.2",
     "@typescript-eslint/eslint-plugin": "^5.3.1",
     "@typescript-eslint/parser": "^5.3.1",
     "esbuild": "^0.13.12",
@@ -31,8 +34,13 @@
     "eslint": "^8.2.0",
     "eslint-config-prettier": "^8.3.0",
     "eslint-plugin-jest": "^25.2.4",
+    "http-server": "^14.0.0",
     "jest": "^27.3.1",
     "prettier": "^2.4.1",
     "typescript": "^4.4.4"
+  },
+  "dependencies": {
+    "cross-fetch": "^3.1.4",
+    "pako": "^2.0.4"
   }
 }

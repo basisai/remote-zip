@@ -1,1 +1,1 @@
-export const HELLO = "hello";
+export * from "./zip";
