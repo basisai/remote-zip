@@ -13,50 +13,155 @@ const SIG_DATA_DESCRIPTOR = 0x504b0708;
 class RemoteZipError extends Error {
   constructor(message) {
     super(message);
-    this.constructor.name;
+    this.name = this.constructor.name;
   }
 }
 
 export interface EndOfCentralDirectory {
   meta: Record<string, unknown>;
   data: {
-    cdDisk: number;
-    centralDirectoryByteOffset: number;
-    centralDirectoryDiskNumber: number;
-    centralDirectoryRecordCount: number;
-    centralDirectoryByteSize: number;
-    comment: string;
-    commentLength: number;
-    diskNumber: number;
+    /** End of central directory signature = 0x06054b50 */
     signature: ArrayBuffer;
+    /** Number of this disk (or 0xffff for ZIP64) */
+    diskNumber: number;
+    /** Disk where central directory starts (or 0xffff for ZIP64) */
+    cdDisk: number;
+    /** Number of central directory records on this disk (or 0xffff for ZIP64) */
+    centralDirectoryDiskNumber: number;
+    /** Number of central directory records on this disk (or 0xffff for ZIP64) */
+    centralDirectoryRecordCount: number;
+    /** Size of central directory (bytes) (or 0xffffffff for ZIP64) */
+    centralDirectoryByteSize: number;
+    /** Offset of start of central directory, relative to start of archive (or 0xffffffff for ZIP64) */
+    centralDirectoryByteOffset: number;
+    /** Comment length (n) */
+    comment: string;
+    /** Comment */
+    commentLength: number;
   };
 }
 
 export interface CentralDirectoryRecord {
   meta: {
+    /** Length of the entire record */
     length: number;
   };
   data: {
+    /** Central directory file header signature = 0x02014b50 */
     signature: ArrayBuffer;
+    /** Version of the program this ZIP was made by.
+     *
+     * Upper byte:
+     * - 0 - MS-DOS and OS/2 (FAT / VFAT / FAT32 file systems)
+     * - 1 - Amiga
+     * - 2 - OpenVMS
+     * - 3 - UNIX
+     * - 4 - VM/CMS
+     * - 5 - Atari ST
+     * - 6 - OS/2 H.P.F.S.
+     * - 7 - Macintosh
+     * - 8 - Z-System
+     * - 9 - CP/M
+     * - 10 - Windows NTFS
+     * - 11 - MVS (OS/390 - Z/OS)
+     * - 12 - VSE
+     * - 13 - Acorn Risc
+     * - 14 - VFAT
+     * - 15 - alternate MVS
+     * - 16 - BeOS
+     * - 17 - Tandem
+     * - 18 - OS/400
+     * - 19 - OS/X (Darwin)
+     * - 20 - 255: Unused
+     */
     versionMadeBy: number;
+    /** Version needed to extract (minimum) */
     versionToExtract: number;
+    /** General purpose bit flag
+     *
+     * - Bit 00: encrypted file
+     * - Bit 01: compression option
+     * - Bit 02: compression option
+     * - Bit 03: data descriptor
+     * - Bit 04: enhanced deflation
+     * - Bit 05: compressed patched data
+     * - Bit 06: strong encryption
+     * - Bit 07-10: unused
+     * - Bit 11: language encoding
+     * - Bit 12: reserved
+     * - Bit 13: mask header values
+     * - Bit 14-15: reserved
+     */
     generalPurposeBitFlag: number;
-    /** Compression method; e.g. none = 0, DEFLATE = 8 (or "\0x08\0x00") */
+    /** Compression method; e.g. none = 0, DEFLATE = 8 (or "\0x08\0x00")
+     *
+     * - 00: no compression
+     * - 01: shrunk
+     * - 02: reduced with compression factor 1
+     * - 03: reduced with compression factor 2
+     * - 04: reduced with compression factor 3
+     * - 05: reduced with compression factor 4
+     * - 06: imploded
+     * - 07: reserved
+     * - 08: deflated
+     * - 09: enhanced deflated
+     * - 10: PKWare DCL imploded
+     * - 11: reserved
+     * - 12: compressed using BZIP2
+     * - 13: reserved
+     * - 14: LZMA
+     * - 15-17: reserved
+     * - 18: compressed using IBM TERSE
+     * - 19: IBM LZ77 z
+     * - 98: PPMd version I, Rev 1
+     */
     compressionMethod: number;
+    /** File last modification time (DOS) */
     lastModifiedTime: number;
+    /** File last modification date (DOS) */
     lastModifiedDate: number;
+    /** CRC-32 of uncompressed data
+     * Value computed over file data by CRC-32 algorithm with
+     * 'magic number' 0xdebb20e3 (little endian)
+     */
     crc32: number;
+    /** Compressed size (or 0xffffffff for ZIP64) */
     compressedSize: number;
+    /** Uncompressed size (or 0xffffffff for ZIP64) */
     uncompressedSize: number;
+    /** File name length (n) */
     filenameLength: number;
+    /** Extra field length (m) */
     extraFieldLength: number;
+    /** File comment length (k) */
     fileCommentLength: number;
+    /** Disk number where file starts */
     startingDiskNumber: number;
+    /** Internal file attributes
+     *
+     * Bit 0: apparent ASCII/text file
+     * Bit 1: reserved
+     * Bit 2: control field records precede logical records
+     * Bits 3-16: unused
+     */
     internalFileAttributes: number;
+    /** External file attributes (host-system dependent) */
     externalFileAttributes: number;
+    /** Relative offset of local file header.
+     * This is the number of bytes between the start of the first
+     * disk on which the file occurs, and the start of the local file
+     * header. This allows software reading the central directory to
+     * locate the position of the file inside the ZIP file. */
     localFileHeaderRelativeOffset: number;
+    /** File name */
     filename: string;
+    /** Extra field
+     *
+     * Used to store additional information. The field consistes of a sequence of
+     * header and data pairs, where the header has a 2 byte identifier and a 2 byte data size field.
+     */
     extraField: ArrayBuffer;
+    /** File comment */
     fileComment: string;
   };
 }
@@ -70,26 +175,45 @@ export interface LocalFileHeader {
      * appended in a 12-byte structure (optionally preceded by a 4-byte signature) immediately
      * after the compressed data */
     dataDescriptor?: {
+      /** Optional data descriptor signature = 0x08074b50 */
       optionalSignature?: ArrayBuffer;
+      /** CRC-32 of uncompressed data */
       crc32: number;
+      /** Compressed size */
       compressedSize: number;
+      /** Uncompressed size */
       uncompressedSize: number;
     };
   };
   data: {
+    /** Local file header signature = 0x04034b50 (PK♥♦ or "PK\3\4") */
     signature: ArrayBuffer;
+    /** Version needed to extract (minimum) */
     versionToExtract: number;
+    /** General purpose bit flag  */
     generalPurposeBitFlag: number;
     /** Compression method; e.g. none = 0, DEFLATE = 8 (or "\0x08\0x00") */
     compressionMethod: number;
+    /** File last modification time (DOS format) */
     lastModifiedTime: number;
+    /** File last modification date (DOS format) */
     lastModifiedDate: number;
+    /** CRC-32 of uncompressed data
+     * Value computed over file data by CRC-32 algorithm with
+     * 'magic number' 0xdebb20e3 (little endian)
+     */
     crc32: number;
+    /** Compressed size (or 0xffffffff for ZIP64) */
     compressedSize: number;
+    /** Uncompressed size (or 0xffffffff for ZIP64) */
     uncompressedSize: number;
+    /** File name length (n) */
     filenameLength: number;
+    /** Extra field length (m) */
     extraFieldLength: number;
+    /** File name */
     filename: string;
+    /** Extra field */
     extraField: ArrayBuffer;
   };
 }
@@ -100,7 +224,6 @@ export interface RemoteZipFile {
   size: number;
   /** ISO timestamp without timezone (ZIP/DOS does not preserve timezones) */
   modified: string;
-  crc32: number;
 }
 
 export class RemoteZip {
@@ -134,7 +257,6 @@ export class RemoteZip {
         r.data.lastModifiedDate,
         r.data.lastModifiedTime
       ),
-      crc32: r.data.crc32,
     }));
   }
 

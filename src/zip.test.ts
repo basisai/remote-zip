@@ -41,13 +41,11 @@ describe("RemoteZip integration tests", () => {
 
       expect(files).toHaveLength(4);
       expect(files[0]).toEqual({
-        crc32: 0,
         filename: "dir/",
         modified: "2021-11-10T12:37:26",
         size: 0,
       });
       expect(files[1]).toEqual({
-        crc32: 2069210904,
         filename: "xir/testdir.txt",
         modified: "2021-06-17T12:28:02",
         size: 14,
