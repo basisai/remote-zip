@@ -46,6 +46,7 @@ See [docs/api.md](docs/api.md) for API documentation.
 ```ts
 const zipUrl = new URL("http://www.example.com/test.zip");
 const remoteZip = await new RemoteZipPointer(zipUrl).populate();
+const fileListing = remoteZip.files(); // RemoteZipFile[]
 const uncompressedBytes = await remoteZip.fetch("test.txt"); // ArrayBuffer
 ```
 

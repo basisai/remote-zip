@@ -4,7 +4,7 @@
   "main": "index.js",
   "module": "lib/index.js",
   "types": "lib/index.d.ts",
-  "author": "Ng Guoyou <guoyou@basis-ai.com>",
+  "author": "Ng Guoyou <guoyou.ng@aicadium.ai>",
   "license": "MIT",
   "scripts": {
     "d": "WATCH=1 yarn build",

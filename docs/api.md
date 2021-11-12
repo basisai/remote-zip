@@ -10,6 +10,8 @@ An uninitialised pointer to a remote ZIP file.
 
   Get an initialised `RemoteZip` object.
 
+  Throws `RemoteZipError` if it fails to parse or fetch.
+
 ## RemoteZip
 
 - `RemoteZip({ contentLength: number, url: URL, centralDirectoryRecords: CentralDirectoryRecord[], endOfCentralDirectory: EndOfCentralDirectory | null})`
@@ -36,6 +38,8 @@ An uninitialised pointer to a remote ZIP file.
   const text = new TextDecoder().decode(bytes); // Hello, world!
   ```
 
+  Throws `RemoteZipError` if it fails to parse or fetch.
+
 - `RemoteZip.files(): RemoteZipFile[]`
 
   Get the file listing of the remote ZIP file.
@@ -48,3 +52,5 @@ An uninitialised pointer to a remote ZIP file.
   const files = remoteZip.files();
   // files = [{ crc32: 2069210904, filename: "text.txt", modified: "2021-06-17T12:28:02", size: 14 }]
   ```
+
+  Throws `RemoteZipError` if it fails to parse or fetch.

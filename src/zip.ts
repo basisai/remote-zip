@@ -325,7 +325,8 @@ const parseAllCDs = (buffer: ArrayBufferLike): CentralDirectoryRecord[] => {
   const cds: CentralDirectoryRecord[] = [];
   const view = new DataView(buffer);
 
-  for (let i = 0; i < buffer.byteLength - 4; i += 1) {
+  // Need >= 4 bytes to check for signature
+  for (let i = 0; i <= buffer.byteLength - 4; i += 1) {
     if (view.getUint32(i) === SIG_CD) {
       const cd = parseOneCD(buffer.slice(i));
       if (cd) {
@@ -342,11 +343,13 @@ const parseAllCDs = (buffer: ArrayBufferLike): CentralDirectoryRecord[] => {
 };
 
 const parseOneCD = (buffer: ArrayBufferLike): CentralDirectoryRecord | null => {
+  const MIN_CD_LENGTH = 46;
+
   const view = new DataView(buffer);
   const decoder = new TextDecoder();
 
   // Seek to start of central directory
-  for (let i = 0; i < buffer.byteLength; i += 1) {
+  for (let i = 0; i < buffer.byteLength - MIN_CD_LENGTH; i += 1) {
     if (view.getInt32(i) === SIG_CD) {
       const filenameLength = view.getUint16(i + 28, true); // n
       const extraFieldLength = view.getUint16(i + 30, true); // m
@@ -398,11 +401,13 @@ const parseOneCD = (buffer: ArrayBufferLike): CentralDirectoryRecord | null => {
 const parseOneEOCD = (
   buffer: ArrayBufferLike
 ): EndOfCentralDirectory | null => {
+  const MIN_EOCD_LENGTH = 22;
+
   const view = new DataView(buffer);
   const decoder = new TextDecoder();
 
-  // Seek to EOCD
-  for (let i = 0; i < buffer.byteLength - 4; i += 1) {
+  // Seek to end of central directory record
+  for (let i = 0; i <= buffer.byteLength - MIN_EOCD_LENGTH; i += 1) {
     if (view.getUint32(i) === SIG_EOCD) {
       const commentLength = view.getUint16(i + 20, false);
 
@@ -434,11 +439,13 @@ const parseOneLocalFile = (
    * It is used to find the correct offset for the data descriptor. */
   compressedSizeOverride = 0
 ): LocalFileHeader | null => {
+  const MIN_LOCAL_FILE_LENGTH = 30;
+
   const view = new DataView(buffer);
   const decoder = new TextDecoder();
 
   // Seek to first local file
-  for (let i = 0; i < buffer.byteLength - 4; i += 1) {
+  for (let i = 0; i <= buffer.byteLength - MIN_LOCAL_FILE_LENGTH; i += 1) {
     if (view.getUint32(i) === SIG_LOCAL_FILE_HEADER) {
       const filenameLength = view.getUint16(i + 26, true); // n
       const extraFieldLength = view.getUint16(i + 28, true); // m
