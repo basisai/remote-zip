@@ -600,7 +600,7 @@ const parseOneLocalFile = (
       const extraFieldLength = view.getUint16(i + 28, true); // m
 
       const bitflags = view.getUint16(i + 6, true);
-      const hasDataDescriptor = ((bitflags >> 3) & 1) === 1;
+      const hasDataDescriptor = Boolean((bitflags >> 3) & 1);
 
       const headerEndOffset = i + 30 + filenameLength + extraFieldLength;
       const regularCompressedSize = view.getUint32(i + 18, true);
@@ -617,7 +617,7 @@ const parseOneLocalFile = (
                 optionalSignature: hasOptionalSignature
                   ? buffer.slice(
                       headerEndOffset + compressedSizeOverride,
-                      headerEndOffset + compressedSizeOverride + 4
+                      headerEndOffset + compressedSizeOverride + optionalSignatureOffset
                     )
                   : undefined,
                 crc32: view.getUint32(
