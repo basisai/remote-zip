@@ -225,7 +225,7 @@ export class RemoteZipPointer {
     });
   }
 
-  public async fetchEndOfCentralDirectory(
+  private async fetchEndOfCentralDirectory(
     zipByteLength: number,
     additionalHeaders?: Headers
   ): Promise<EndOfCentralDirectory> {
@@ -284,7 +284,7 @@ export class RemoteZipPointer {
   }
 }
 
-export const parseZipDatetime = (zipDate: number, zipTime: number): string => {
+const parseZipDatetime = (zipDate: number, zipTime: number): string => {
   const day = zipDate & 0x1f;
   const month = (zipDate >> 5) & 0x0f;
   const year = ((zipDate >> 9) & 0x7f) + 1980;
@@ -300,9 +300,7 @@ export const parseZipDatetime = (zipDate: number, zipTime: number): string => {
     .padStart(2, "0")}:${second.toString().padStart(2, "0")}`;
 };
 
-export const parseAllCDs = (
-  buffer: ArrayBufferLike
-): CentralDirectoryRecord[] => {
+const parseAllCDs = (buffer: ArrayBufferLike): CentralDirectoryRecord[] => {
   const cds: CentralDirectoryRecord[] = [];
   const view = new DataView(buffer);
 
@@ -324,9 +322,7 @@ export const parseAllCDs = (
   return cds;
 };
 
-export const parseOneCD = (
-  buffer: ArrayBufferLike
-): CentralDirectoryRecord | null => {
+const parseOneCD = (buffer: ArrayBufferLike): CentralDirectoryRecord | null => {
   const view = new DataView(buffer);
   const decoder = new TextDecoder();
 
@@ -381,7 +377,7 @@ export const parseOneCD = (
   return null;
 };
 
-export const parseOneEOCD = (
+const parseOneEOCD = (
   buffer: ArrayBufferLike
 ): EndOfCentralDirectory | null => {
   const view = new DataView(buffer);
@@ -414,7 +410,7 @@ export const parseOneEOCD = (
   return null;
 };
 
-export const parseOneLocalFile = (
+const parseOneLocalFile = (
   buffer: ArrayBufferLike,
   /** Sometimes, the local header does not have the compressed size and a data descriptor is used after the compressed data.
    * If provided, will be used if the local header indicates a data descriptor block.
