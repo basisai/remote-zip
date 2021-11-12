@@ -1,7 +1,21 @@
+// https://users.cs.jmu.edu/buchhofp/forensics/formats/pkzip.html
 // https://rhardih.io/2021/04/listing-the-contents-of-a-remote-zip-archive-without-downloading-the-entire-file/
 
 import fetch from "cross-fetch";
 import { inflateRaw } from "pako";
+
+// ZIP file signatures
+const SIG_CD = 0x504b0102;
+const SIG_LOCAL_FILE_HEADER = 0x504b0304;
+const SIG_EOCD = 0x504b0506;
+const SIG_DATA_DESCRIPTOR = 0x504b0708;
+
+class RemoteZipError extends Error {
+  constructor(message) {
+    super(message);
+    this.constructor.name;
+  }
+}
 
 export interface EndOfCentralDirectory {
   meta: Record<string, unknown>;
@@ -138,7 +152,7 @@ export class RemoteZip {
       (r) => r.data.filename === path
     );
     if (!file) {
-      throw new Error(`File not found in remote ZIP: ${path}`);
+      throw new RemoteZipError(`File not found in remote ZIP: ${path}`);
     }
 
     // @ts-expect-error polyfill types
@@ -168,9 +182,8 @@ export class RemoteZip {
       await response.arrayBuffer(),
       file.data.compressedSize
     );
-
     if (!localFile) {
-      throw new Error("cannot parse local file in remote ZIP");
+      throw new RemoteZipError("cannot parse local file header in remote ZIP");
     }
 
     // 0 = uncompressed, 8 = deflate
@@ -206,7 +219,7 @@ export class RemoteZipPointer {
     });
     const contentLengthRaw = res.headers.get("content-length");
     if (!contentLengthRaw) {
-      throw new Error("Could not get Content-Length");
+      throw new RemoteZipError("Could not get Content-Length of URL");
     }
     const contentLength = Number.parseInt(contentLengthRaw, 10);
     const endOfCentralDirectory = await this.fetchEndOfCentralDirectory(
@@ -243,14 +256,20 @@ export class RemoteZipPointer {
     });
     const eocdBuffer = await eocdRes.arrayBuffer();
     if (!eocdBuffer) {
-      throw new Error("Could not get Range request to start looking for EOCD");
+      throw new RemoteZipError(
+        "Could not get Range request to start looking for EOCD"
+      );
     }
     const eocd = parseOneEOCD(eocdBuffer);
 
     // 0xffff = ZIP64
-    if (!eocd || eocd.data.cdDisk === 0xffff) {
-      throw new Error(
-        "ZIP file not supportd: could not get EOCD record or ZIP64"
+    if (!eocd) {
+      throw new RemoteZipError("Could not get EOCD record of remote ZIP");
+    }
+
+    if (eocd.data.cdDisk === 0xffff) {
+      throw new RemoteZipError(
+        "ZIP file not supported: could not get EOCD record or ZIP64"
       );
     }
 
@@ -276,14 +295,15 @@ export class RemoteZipPointer {
       redirect: "follow",
     });
     const cdBuffer = await cdRes.arrayBuffer();
-    if (!cdBuffer) {
-      throw new Error("Could not get Range request to start looking for CD");
-    }
     const cd = parseAllCDs(cdBuffer);
+
     return cd;
   }
 }
 
+/**
+ * @see https://github.com/Stuk/jszip/blob/112fcdb9953c6b9a2744afee451d73029f7cd2f8/lib/reader/DataReader.js#L105
+ */
 const parseZipDatetime = (zipDate: number, zipTime: number): string => {
   const day = zipDate & 0x1f;
   const month = (zipDate >> 5) & 0x0f;
@@ -291,13 +311,14 @@ const parseZipDatetime = (zipDate: number, zipTime: number): string => {
   const hour = (zipTime >> 11) & 0x1f;
   const minute = (zipTime >> 5) & 0x3f;
   const second = (zipTime & 0x1f) << 1;
+
+  const pad = (num: number): string => num.toString().padStart(2, "0");
+
   // ZIP doesn't have timezones, but JS parses it as UTC with `new Date`.
-  // Use an ISO timestamp without timezone to refer to local time.
-  return `${year}-${month.toString().padStart(2, "0)")}-${day
-    .toString()
-    .padStart(2, "0")}T${hour.toString().padStart(2, "0")}:${minute
-    .toString()
-    .padStart(2, "0")}:${second.toString().padStart(2, "0")}`;
+  // Manually construct an ISO timestamp without timezone to represent this.
+  return `${year}-${pad(month)}-${pad(day)}T${pad(hour)}:${pad(minute)}:${pad(
+    second
+  )}`;
 };
 
 const parseAllCDs = (buffer: ArrayBufferLike): CentralDirectoryRecord[] => {
@@ -305,16 +326,14 @@ const parseAllCDs = (buffer: ArrayBufferLike): CentralDirectoryRecord[] => {
   const view = new DataView(buffer);
 
   for (let i = 0; i < buffer.byteLength - 4; i += 1) {
-    // central directory signature
-    if (view.getUint32(i) == 0x504b0102) {
+    if (view.getUint32(i) === SIG_CD) {
       const cd = parseOneCD(buffer.slice(i));
       if (cd) {
         cds.push(cd);
         i += cd.meta.length - 1;
         continue;
       }
-    } else if (view.getUint32(i) == 0x504b0506) {
-      // End of CD
+    } else if (view.getUint32(i) === SIG_EOCD) {
       break;
     }
   }
@@ -326,10 +345,9 @@ const parseOneCD = (buffer: ArrayBufferLike): CentralDirectoryRecord | null => {
   const view = new DataView(buffer);
   const decoder = new TextDecoder();
 
-  // Get start of central directory
+  // Seek to start of central directory
   for (let i = 0; i < buffer.byteLength; i += 1) {
-    // central directory signature
-    if (view.getInt32(i) == 0x504b0102) {
+    if (view.getInt32(i) === SIG_CD) {
       const filenameLength = view.getUint16(i + 28, true); // n
       const extraFieldLength = view.getUint16(i + 30, true); // m
       const fileCommentLength = view.getUint16(i + 32, true); // k
@@ -383,10 +401,9 @@ const parseOneEOCD = (
   const view = new DataView(buffer);
   const decoder = new TextDecoder();
 
-  // Get EOCD offset
+  // Seek to EOCD
   for (let i = 0; i < buffer.byteLength - 4; i += 1) {
-    // end of central directory signature
-    if (view.getUint32(i) == 0x504b0506) {
+    if (view.getUint32(i) === SIG_EOCD) {
       const commentLength = view.getUint16(i + 20, false);
 
       // https://en.wikipedia.org/wiki/ZIP_(file_format)#End_of_central_directory_record_(EOCD)
@@ -420,22 +437,22 @@ const parseOneLocalFile = (
   const view = new DataView(buffer);
   const decoder = new TextDecoder();
 
+  // Seek to first local file
   for (let i = 0; i < buffer.byteLength - 4; i += 1) {
-    // end of central directory signature
-    if (view.getUint32(i) == 0x504b0304) {
+    if (view.getUint32(i) === SIG_LOCAL_FILE_HEADER) {
       const filenameLength = view.getUint16(i + 26, true); // n
       const extraFieldLength = view.getUint16(i + 28, true); // m
 
       const bitflags = view.getUint16(i + 6, true);
       const hasDataDescriptor = ((bitflags >> 3) & 1) === 1;
 
-      const regularHeaderEndOffset = i + 30 + filenameLength + extraFieldLength;
+      const headerEndOffset = i + 30 + filenameLength + extraFieldLength;
       const regularCompressedSize = view.getUint32(i + 18, true);
 
       const hasOptionalSignature =
-        view.getUint32(regularHeaderEndOffset + compressedSizeOverride) ===
-        0x504b0708;
-      const extraOffset = hasOptionalSignature ? 4 : 0;
+        view.getUint32(headerEndOffset + compressedSizeOverride) ===
+        SIG_DATA_DESCRIPTOR;
+      const optionalSignatureOffset = hasOptionalSignature ? 4 : 0;
 
       return {
         meta: {
@@ -443,25 +460,27 @@ const parseOneLocalFile = (
             ? {
                 optionalSignature: hasOptionalSignature
                   ? buffer.slice(
-                      regularHeaderEndOffset + compressedSizeOverride,
-                      regularHeaderEndOffset + compressedSizeOverride + 4
+                      headerEndOffset + compressedSizeOverride,
+                      headerEndOffset + compressedSizeOverride + 4
                     )
                   : undefined,
                 crc32: view.getUint32(
-                  regularHeaderEndOffset + compressedSizeOverride + extraOffset,
+                  headerEndOffset +
+                    compressedSizeOverride +
+                    optionalSignatureOffset,
                   true
                 ),
                 compressedSize: view.getUint32(
-                  regularHeaderEndOffset +
+                  headerEndOffset +
                     compressedSizeOverride +
-                    extraOffset +
+                    optionalSignatureOffset +
                     4,
                   true
                 ),
                 uncompressedSize: view.getUint32(
-                  regularHeaderEndOffset +
+                  headerEndOffset +
                     compressedSizeOverride +
-                    extraOffset +
+                    optionalSignatureOffset +
                     8,
                   true
                 ),
@@ -469,12 +488,12 @@ const parseOneLocalFile = (
             : undefined,
           compressedData: hasDataDescriptor
             ? buffer.slice(
-                regularHeaderEndOffset,
-                regularHeaderEndOffset + compressedSizeOverride
+                headerEndOffset,
+                headerEndOffset + compressedSizeOverride
               )
             : buffer.slice(
-                regularHeaderEndOffset,
-                regularHeaderEndOffset + regularCompressedSize
+                headerEndOffset,
+                headerEndOffset + regularCompressedSize
               ),
         },
         data: {
