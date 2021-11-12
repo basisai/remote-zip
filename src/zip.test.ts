@@ -5,7 +5,7 @@ import { Server } from "http";
 
 describe("RemoteZip integration tests", () => {
   let server: Server;
-  const zipUrl = new URL("http://127.0.0.1:8081/test.zip");
+  const url = new URL("http://127.0.0.1:8081/test.zip");
 
   beforeAll(() => {
     server = hs.createServer({
@@ -20,7 +20,7 @@ describe("RemoteZip integration tests", () => {
 
   describe("RemoteZip", () => {
     it("fetches and decompresses remote file in zip", async () => {
-      const remoteZip = await new RemoteZipPointer({ url: zipUrl }).populate();
+      const remoteZip = await new RemoteZipPointer({ url }).populate();
 
       const decoder = new TextDecoder();
       const bytes = await remoteZip.fetch("test.txt");
@@ -28,7 +28,7 @@ describe("RemoteZip integration tests", () => {
     });
 
     it("errors when fetching a missing file", async () => {
-      const remoteZip = await new RemoteZipPointer({ url: zipUrl }).populate();
+      const remoteZip = await new RemoteZipPointer({ url }).populate();
       await expect(remoteZip.fetch("bad")).rejects.toThrow(
         "File not found in remote ZIP: bad"
       );
@@ -37,7 +37,7 @@ describe("RemoteZip integration tests", () => {
     it("supports alternative HTTP methods", async () => {
       await expect(
         new RemoteZipPointer({
-          url: zipUrl,
+          url,
           additionalHeaders: undefined,
           method: "POST",
         }).populate()
@@ -47,7 +47,7 @@ describe("RemoteZip integration tests", () => {
     });
 
     it("provides a friendly listing of files in the zip", async () => {
-      const remoteZip = await new RemoteZipPointer({ url: zipUrl }).populate();
+      const remoteZip = await new RemoteZipPointer({ url }).populate();
 
       const files = remoteZip.files();
 
@@ -69,7 +69,7 @@ describe("RemoteZip integration tests", () => {
 
   describe("RemoteZipPointer", () => {
     it("fetches and parses end of central directory record", async () => {
-      const remoteZip = await new RemoteZipPointer({ url: zipUrl }).populate();
+      const remoteZip = await new RemoteZipPointer({ url }).populate();
 
       expect(remoteZip.contentLength).toBe(863);
       expect(
@@ -78,7 +78,7 @@ describe("RemoteZip integration tests", () => {
     });
 
     it("fetches and parses central directory records", async () => {
-      const remoteZip = await new RemoteZipPointer({ url: zipUrl }).populate();
+      const remoteZip = await new RemoteZipPointer({ url }).populate();
 
       expect(remoteZip.centralDirectoryRecords?.length).toBe(4);
       expect(remoteZip.centralDirectoryRecords[0].data.filename).toBe("dir/");
