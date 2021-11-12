@@ -617,7 +617,7 @@ const parseOneLocalFile = (
                 optionalSignature: hasOptionalSignature
                   ? buffer.slice(
                       headerEndOffset + compressedSizeOverride,
-                      headerEndOffset + compressedSizeOverride + 4
+                      headerEndOffset + compressedSizeOverride + optionalSignatureOffset
                     )
                   : undefined,
                 crc32: view.getUint32(
