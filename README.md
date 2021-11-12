@@ -44,8 +44,8 @@ See [docs/api.md](docs/api.md) for API documentation.
 ### Basic
 
 ```ts
-const zipUrl = new URL("http://www.example.com/test.zip");
-const remoteZip = await new RemoteZipPointer(zipUrl).populate();
+const url = new URL("http://www.example.com/test.zip");
+const remoteZip = await new RemoteZipPointer({ url }).populate();
 const fileListing = remoteZip.files(); // RemoteZipFile[]
 const uncompressedBytes = await remoteZip.fetch("test.txt"); // ArrayBuffer
 ```
@@ -53,13 +53,15 @@ const uncompressedBytes = await remoteZip.fetch("test.txt"); // ArrayBuffer
 ### With headers
 
 ```ts
+const method = "POST";
 const additonalHeaders = new Headers();
 additonalHeaders.append("X-Example", "foobar");
-const zipUrl = new URL("http://www.example.com/test.zip");
-const remoteZip = await new RemoteZipPointer(
-  zipUrl,
-  additionalHeaders
-).populate();
+const url = new URL("http://www.example.com/test.zip");
+const remoteZip = await new RemoteZipPointer({
+  url,
+  additionalHeaders,
+  method,
+}).populate();
 const uncompressedBytes = await remoteZip.fetch("test.txt", additionalHeaders);
 ```
 

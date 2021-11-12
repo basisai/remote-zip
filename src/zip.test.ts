@@ -20,7 +20,7 @@ describe("RemoteZip integration tests", () => {
 
   describe("RemoteZip", () => {
     it("fetches and decompresses remote file in zip", async () => {
-      const remoteZip = await new RemoteZipPointer(zipUrl).populate();
+      const remoteZip = await new RemoteZipPointer({ url: zipUrl }).populate();
 
       const decoder = new TextDecoder();
       const bytes = await remoteZip.fetch("test.txt");
@@ -28,14 +28,26 @@ describe("RemoteZip integration tests", () => {
     });
 
     it("errors when fetching a missing file", async () => {
-      const remoteZip = await new RemoteZipPointer(zipUrl).populate();
+      const remoteZip = await new RemoteZipPointer({ url: zipUrl }).populate();
       await expect(remoteZip.fetch("bad")).rejects.toThrow(
         "File not found in remote ZIP: bad"
       );
     });
 
+    it("supports alternative HTTP methods", async () => {
+      await expect(
+        new RemoteZipPointer({
+          url: zipUrl,
+          additionalHeaders: undefined,
+          method: "POST",
+        }).populate()
+      ).rejects.toThrow(
+        "Could not fetch remote ZIP at http://127.0.0.1:8081/test.zip: HTTP status 405"
+      );
+    });
+
     it("provides a friendly listing of files in the zip", async () => {
-      const remoteZip = await new RemoteZipPointer(zipUrl).populate();
+      const remoteZip = await new RemoteZipPointer({ url: zipUrl }).populate();
 
       const files = remoteZip.files();
 
@@ -44,18 +56,20 @@ describe("RemoteZip integration tests", () => {
         filename: "dir/",
         modified: "2021-11-10T12:37:26",
         size: 0,
+        attributes: 1107099648,
       });
       expect(files[1]).toEqual({
         filename: "xir/testdir.txt",
         modified: "2021-06-17T12:28:02",
         size: 14,
+        attributes: 2176057344,
       });
     });
   });
 
   describe("RemoteZipPointer", () => {
     it("fetches and parses end of central directory record", async () => {
-      const remoteZip = await new RemoteZipPointer(zipUrl).populate();
+      const remoteZip = await new RemoteZipPointer({ url: zipUrl }).populate();
 
       expect(remoteZip.contentLength).toBe(863);
       expect(
@@ -64,7 +78,7 @@ describe("RemoteZip integration tests", () => {
     });
 
     it("fetches and parses central directory records", async () => {
-      const remoteZip = await new RemoteZipPointer(zipUrl).populate();
+      const remoteZip = await new RemoteZipPointer({ url: zipUrl }).populate();
 
       expect(remoteZip.centralDirectoryRecords?.length).toBe(4);
       expect(remoteZip.centralDirectoryRecords[0].data.filename).toBe("dir/");

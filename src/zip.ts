@@ -224,6 +224,8 @@ export interface RemoteZipFile {
   size: number;
   /** ISO timestamp without timezone (ZIP/DOS does not preserve timezones) */
   modified: string;
+  /** File attributes of host system */
+  attributes: number;
 }
 
 export class RemoteZip {
@@ -231,20 +233,24 @@ export class RemoteZip {
   url: URL;
   centralDirectoryRecords: CentralDirectoryRecord[];
   endOfCentralDirectory: EndOfCentralDirectory | null;
+  method: string;
 
   constructor({
     contentLength,
     url,
     centralDirectoryRecords,
     endOfCentralDirectory,
+    method,
   }: {
     contentLength: number;
     url: URL;
-    centralDirectoryRecords;
-    endOfCentralDirectory;
+    centralDirectoryRecords: CentralDirectoryRecord[];
+    endOfCentralDirectory: EndOfCentralDirectory | null;
+    method: string;
   }) {
     this.contentLength = contentLength;
     this.url = url;
+    this.method = method;
     this.centralDirectoryRecords = centralDirectoryRecords;
     this.endOfCentralDirectory = endOfCentralDirectory;
   }
@@ -257,6 +263,7 @@ export class RemoteZip {
         r.data.lastModifiedDate,
         r.data.lastModifiedTime
       ),
+      attributes: r.data.externalFileAttributes,
     }));
   }
 
@@ -296,6 +303,7 @@ export class RemoteZip {
     );
 
     const response = await fetch(this.url.toString(), {
+      method: this.method,
       headers,
       redirect: "follow", // TODO: make this configurable
       // TODO: additional fetch options
@@ -327,10 +335,20 @@ export class RemoteZip {
 export class RemoteZipPointer {
   url: URL;
   additionalHeaders?: Headers;
+  method: string;
 
-  constructor(url: URL, additionalHeaders?: Headers) {
+  constructor({
+    url,
+    additionalHeaders,
+    method = "GET",
+  }: {
+    url: URL;
+    additionalHeaders?: Headers;
+    method?: string;
+  }) {
     this.url = url;
     this.additionalHeaders = additionalHeaders;
+    this.method = method;
   }
 
   public async populate(): Promise<RemoteZip> {
@@ -357,6 +375,7 @@ export class RemoteZipPointer {
       contentLength,
       endOfCentralDirectory,
       centralDirectoryRecords,
+      method: this.method,
     });
   }
 
@@ -373,9 +392,16 @@ export class RemoteZipPointer {
     const eocdHeaders = new fetch.Headers(additionalHeaders);
     eocdHeaders.append("Range", `bytes=${eocdInitialOffset}-${zipByteLength}`);
     const eocdRes = await fetch(this.url.toString(), {
+      method: this.method,
       headers: eocdHeaders,
       redirect: "follow",
     });
+    if (eocdRes.status < 200 || eocdRes.status >= 400) {
+      throw new RemoteZipError(
+        `Could not fetch remote ZIP at ${this.url}: HTTP status ${eocdRes.status}`
+      );
+    }
+
     const eocdBuffer = await eocdRes.arrayBuffer();
     if (!eocdBuffer) {
       throw new RemoteZipError(
@@ -413,6 +439,7 @@ export class RemoteZipPointer {
       }`
     );
     const cdRes = await fetch(this.url.toString(), {
+      method: this.method,
       headers: cdHeaders,
       redirect: "follow",
     });

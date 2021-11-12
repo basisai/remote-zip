@@ -4,7 +4,7 @@
 
 An uninitialised pointer to a remote ZIP file.
 
-- `RemoteZipPointer(url: URL, additionalHeaders?: Headers)`
+- `RemoteZipPointer({ url: URL, additionalHeaders?: Headers, method = "GET"} )`
 
 - `RemoteZipPointer.populate(): Promise<RemoteZip>`
 
@@ -21,8 +21,8 @@ An uninitialised pointer to a remote ZIP file.
   ```ts
   import { RemoteZipPointer } from "remote-zip";
 
-  const zipUrl = new URL("http://www.example.com/test.zip");
-  const remoteZip = await new RemoteZipPointer(zipUrl).populate();
+  const url = new URL("http://www.example.com/test.zip");
+  const remoteZip = await new RemoteZipPointer({ url }).populate();
   ```
 
 - `RemoteZip.fetch(path: string, additionalHeaders?: Headers): Promise<ArrayBuffer>`
@@ -32,8 +32,8 @@ An uninitialised pointer to a remote ZIP file.
   ```ts
   import { RemoteZipPointer } from "remote-zip";
 
-  const zipUrl = new URL("http://www.example.com/test.zip");
-  const remoteZip = await new RemoteZipPointer(zipUrl).populate();
+  const url = new URL("http://www.example.com/test.zip");
+  const remoteZip = await new RemoteZipPointer({ url }).populate();
   const bytes = await remoteZip.fetch("test.txt"); // ArrayBuffer
   const text = new TextDecoder().decode(bytes); // Hello, world!
   ```
@@ -47,10 +47,10 @@ An uninitialised pointer to a remote ZIP file.
   ```ts
   import { RemoteZipPointer } from "remote-zip";
 
-  const zipUrl = new URL("http://www.example.com/test.zip");
-  const remoteZip = await new RemoteZipPointer(zipUrl).populate();
+  const url = new URL("http://www.example.com/test.zip");
+  const remoteZip = await new RemoteZipPointer({ url }).populate();
   const files = remoteZip.files();
-  // files = [{ crc32: 2069210904, filename: "text.txt", modified: "2021-06-17T12:28:02", size: 14 }]
+  // files = [{ attributes: 1107099648, filename: "text.txt", modified: "2021-06-17T12:28:02", size: 14 }]
   ```
 
   Throws `RemoteZipError` if it fails to parse or fetch.
