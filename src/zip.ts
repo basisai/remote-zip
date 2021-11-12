@@ -431,7 +431,7 @@ export const parseOneLocalFile = (
       const extraFieldLength = view.getUint16(i + 28, true); // m
 
       const bitflags = view.getUint16(i + 6, true);
-      const hasDataDescriptor = bitflags >> 3 === 1;
+      const hasDataDescriptor = ((bitflags >> 3) & 1) === 1;
 
       const regularHeaderEndOffset = i + 30 + filenameLength + extraFieldLength;
       const regularCompressedSize = view.getUint32(i + 18, true);
