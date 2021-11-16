@@ -34,7 +34,7 @@ jobs:
         with:
           registry-url: "https://npm.pkg.github.com"
           # Defaults to the user or organization that owns the workflow file
-          scope: "@gyng"
+          scope: "@basisai"
 
       - name: Publish to GitHub Packages
         run: npm publish
