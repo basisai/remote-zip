@@ -1,6 +1,6 @@
 {
   "name": "@basisai/remote-zip",
-  "version": "0.1.6",
+  "version": "0.1.7",
   "main": "index.js",
   "module": "lib/index.js",
   "types": "lib/index.d.ts",
