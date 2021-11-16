@@ -1,6 +1,6 @@
 # remote-zip
 
-Interact with files inside remote zip files efficiently.
+Fetch file listings and individual files from a remote ZIP file.
 
 - [API](docs/api.md)
 
@@ -10,7 +10,6 @@ Without downloading the entire ZIP:
 
 - Fetch individual files in a remote ZIP
 - Fetch file listings
-- Supports additional headers for fetch calls (auth, etc).
 
 The gist of what the library does is:
 
