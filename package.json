@@ -1,6 +1,6 @@
 {
   "name": "@basisai/remote-zip",
-  "version": "0.1.3",
+  "version": "0.1.4",
   "main": "index.js",
   "module": "lib/index.js",
   "types": "lib/index.d.ts",
@@ -16,19 +16,19 @@
     "url": "git://github.com/basisai/remote-zip.git"
   },
   "scripts": {
-    "d": "WATCH=1 yarn build",
-    "d:server": "http-server fixtures",
     "build": "rm -rf lib/* && yarn ts-types && node ./esbuild.js",
-    "lint": "yarn lint:prettier && yarn lint:eslint",
-    "lint:fix": "yarn lint:prettier:fix && yarn lint:eslint:fix",
-    "lint:eslint": "eslint . --ext .js --ext .jsx --ext .ts --ext .tsx",
+    "d:server": "http-server fixtures",
+    "d": "WATCH=1 yarn build",
     "lint:eslint:fix": "yarn lint:eslint --fix",
-    "lint:prettier": "prettier --check .",
+    "lint:eslint": "eslint . --ext .js --ext .jsx --ext .ts --ext .tsx",
+    "lint:fix": "yarn lint:prettier:fix && yarn lint:eslint:fix",
     "lint:prettier:fix": "prettier --write .",
-    "t": "yarn test",
+    "lint:prettier": "prettier --check .",
+    "lint": "yarn lint:prettier && yarn lint:eslint",
     "t:watch": "yarn test --watch",
-    "test": "jest",
+    "t": "yarn test",
     "test:coverage": "yarn test --coverage",
+    "test": "jest",
     "ts-types": " tsc --emitDeclarationOnly --outDir lib"
   },
   "devDependencies": {
