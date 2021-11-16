@@ -1,5 +1,7 @@
 # remote-zip
 
+Interact with files inside remote zip files efficiently.
+
 - [API](docs/api.md)
 
 ---
@@ -34,11 +36,11 @@ Without downloading the entire ZIP:
 ## Install
 
 ```bash
-yarn add @aicadium/remote-zip
+yarn add @basisai/remote-zip
 ```
 
 ```bash
-npm install --save @aicadium/remote-zip
+npm install --save @basisai/remote-zip
 ```
 
 ## Usage
