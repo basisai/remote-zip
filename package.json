@@ -16,7 +16,7 @@
     "url": "git://github.com/basisai/remote-zip.git"
   },
   "scripts": {
-    "build": "rm -rf lib/* && yarn ts-types && node ./esbuild.js && node ./esbuild.js",
+    "build": "rm -rf lib/* && yarn ts-types && node ./esbuild.js",
     "d:server": "http-server fixtures",
     "d": "WATCH=1 yarn build",
     "lint:eslint:fix": "yarn lint:eslint --fix",
