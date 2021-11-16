@@ -1,6 +1,6 @@
 # https://docs.github.com/en/actions/publishing-packages/publishing-nodejs-packages
 
-name: Build and package
+name: Publish
 on:
   release:
     types: [created]
