@@ -1,5 +1,5 @@
 {
-  "name": "@aicadium/remote-zip",
+  "name": "@basisai/remote-zip",
   "version": "0.1.0",
   "main": "index.js",
   "module": "lib/index.js",
