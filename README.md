@@ -68,6 +68,8 @@ const uncompressedBytes = await remoteZip.fetch("test.txt", additionalHeaders);
 
 ## Dev
 
+<details>
+<summary>Dev instructions</summary>
 See `scripts` in `package.json` for more scripts.
 
 - `yarn d` watch and build
@@ -111,3 +113,4 @@ docker-compose -f docker-compose.test.yml up --build
    The workflow at `./github/workflows/publish.yml` should run and publish your packages to both NPM and GitHub Packages.
 
    Don't forget to bump your version number in `package.json` before this.
+</details>
