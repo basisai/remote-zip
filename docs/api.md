@@ -4,7 +4,7 @@
 
 An uninitialised pointer to a remote ZIP file.
 
-- `RemoteZipPointer({ url: URL, additionalHeaders?: Headers, method = "GET"} )`
+- `RemoteZipPointer({ url: URL, additionalHeaders?: Headers, method = "GET", credentials = "same-origin" } )`
 
 - `RemoteZipPointer.populate(): Promise<RemoteZip>`
 
@@ -14,7 +14,7 @@ An uninitialised pointer to a remote ZIP file.
 
 ## RemoteZip
 
-- `RemoteZip({ contentLength: number, url: URL, centralDirectoryRecords: CentralDirectoryRecord[], endOfCentralDirectory: EndOfCentralDirectory | null})`
+- `RemoteZip({ contentLength: number, url: URL, centralDirectoryRecords: CentralDirectoryRecord[], endOfCentralDirectory: EndOfCentralDirectory | null, credentials = "same-origin" })`
 
   Best construct this from a `RemoteZipPointer`.
 

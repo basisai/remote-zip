@@ -234,6 +234,7 @@ export class RemoteZip {
   centralDirectoryRecords: CentralDirectoryRecord[];
   endOfCentralDirectory: EndOfCentralDirectory | null;
   method: string;
+  credentials: "include" | "omit" | "same-origin";
 
   constructor({
     contentLength,
@@ -241,18 +242,21 @@ export class RemoteZip {
     centralDirectoryRecords,
     endOfCentralDirectory,
     method,
+    credentials = "same-origin",
   }: {
     contentLength: number;
     url: URL;
     centralDirectoryRecords: CentralDirectoryRecord[];
     endOfCentralDirectory: EndOfCentralDirectory | null;
     method: string;
+    credentials: "include" | "omit" | "same-origin";
   }) {
     this.contentLength = contentLength;
     this.url = url;
     this.method = method;
     this.centralDirectoryRecords = centralDirectoryRecords;
     this.endOfCentralDirectory = endOfCentralDirectory;
+    this.credentials = credentials;
   }
 
   public files(): RemoteZipFile[] {
@@ -306,6 +310,7 @@ export class RemoteZip {
       method: this.method,
       headers,
       redirect: "follow", // TODO: make this configurable
+      credentials: this.credentials,
       // TODO: additional fetch options
     });
     const localFile = parseOneLocalFile(
@@ -336,19 +341,23 @@ export class RemoteZipPointer {
   url: URL;
   additionalHeaders?: Headers;
   method: string;
+  credentials: "include" | "omit" | "same-origin";
 
   constructor({
     url,
     additionalHeaders,
     method = "GET",
+    credentials = "same-origin",
   }: {
     url: URL;
     additionalHeaders?: Headers;
     method?: string;
+    credentials?: "include" | "omit" | "same-origin";
   }) {
     this.url = url;
     this.additionalHeaders = additionalHeaders;
     this.method = method;
+    this.credentials = credentials;
   }
 
   public async populate(): Promise<RemoteZip> {
@@ -356,6 +365,7 @@ export class RemoteZipPointer {
       method: "HEAD",
       headers: this.additionalHeaders,
       redirect: "follow",
+      credentials: this.credentials,
     });
     const contentLengthRaw = res.headers.get("content-length");
     if (!contentLengthRaw) {
@@ -376,6 +386,7 @@ export class RemoteZipPointer {
       endOfCentralDirectory,
       centralDirectoryRecords,
       method: this.method,
+      credentials: this.credentials,
     });
   }
 
@@ -395,6 +406,7 @@ export class RemoteZipPointer {
       method: this.method,
       headers: eocdHeaders,
       redirect: "follow",
+      credentials: this.credentials,
     });
     if (eocdRes.status < 200 || eocdRes.status >= 400) {
       throw new RemoteZipError(
@@ -442,6 +454,7 @@ export class RemoteZipPointer {
       method: this.method,
       headers: cdHeaders,
       redirect: "follow",
+      credentials: this.credentials,
     });
     const cdBuffer = await cdRes.arrayBuffer();
     const cd = parseAllCDs(cdBuffer);
@@ -617,7 +630,9 @@ const parseOneLocalFile = (
                 optionalSignature: hasOptionalSignature
                   ? buffer.slice(
                       headerEndOffset + compressedSizeOverride,
-                      headerEndOffset + compressedSizeOverride + optionalSignatureOffset
+                      headerEndOffset +
+                        compressedSizeOverride +
+                        optionalSignatureOffset
                     )
                   : undefined,
                 crc32: view.getUint32(

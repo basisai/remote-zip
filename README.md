@@ -41,6 +41,8 @@ yarn add $TODO
 
 See [docs/api.md](docs/api.md) for API documentation.
 
+If using in the browser, the server will need to whitelist CORS for `GET`, `HEAD`, and the `Range` header.
+
 ### Basic
 
 ```ts
@@ -50,7 +52,7 @@ const fileListing = remoteZip.files(); // RemoteZipFile[]
 const uncompressedBytes = await remoteZip.fetch("test.txt"); // ArrayBuffer
 ```
 
-### With headers
+### With more features
 
 ```ts
 const method = "POST";
@@ -61,6 +63,7 @@ const remoteZip = await new RemoteZipPointer({
   url,
   additionalHeaders,
   method,
+  credentials: "include",
 }).populate();
 const uncompressedBytes = await remoteZip.fetch("test.txt", additionalHeaders);
 ```
