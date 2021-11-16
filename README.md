@@ -33,8 +33,12 @@ Without downloading the entire ZIP:
 
 ## Install
 
+```bash
+yarn add @aicadium/remote-zip
 ```
-yarn add $TODO
+
+```bash
+npm install --save @aicadium/remote-zip
 ```
 
 ## Usage
@@ -82,3 +86,31 @@ Run tests and checks with Docker
 ```
 docker-compose -f docker-compose.test.yml up --build
 ```
+
+### Publish
+
+#### Setup
+
+1. Get an automation token from npm under settings
+   ```
+   https://www.npmjs.com/settings/aicadium/tokens/
+   ```
+
+2. Add the token to your repository secrets. 
+   ```
+   https://github.com/$YOUR_USERNAME/$YOUR_REPO_NAME/settings/secrets/actions/new
+   ```
+
+   - Name: `NPM_TOKEN`
+   - Value: The automation token you got from the previous step
+
+#### Run
+
+1. Create a new release.
+   ```
+   https://github.com/$YOUR_USERNAME/$YOUR_REPO_NAME/releases
+   ```
+
+   The workflow at `./github/workflows/publish.yml` should run and publish your packages to both NPM and GitHub Packages.
+
+   Don't forget to bump your version number in `package.json` before this.

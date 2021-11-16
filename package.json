@@ -1,11 +1,20 @@
 {
-  "name": "remote-zip",
+  "name": "@aicadium/remote-zip",
   "version": "0.1.0",
   "main": "index.js",
   "module": "lib/index.js",
   "types": "lib/index.d.ts",
   "author": "AIcadium, Ng Guoyou <guoyou.ng@aicadium.ai>",
   "license": "MIT",
+  "files": [
+    "LICENSE",
+    "package.json",
+    "lib/**"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/basisai/remote-zip.git"
+  },
   "scripts": {
     "d": "WATCH=1 yarn build",
     "d:server": "http-server fixtures",
