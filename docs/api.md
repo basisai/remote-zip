@@ -4,11 +4,13 @@
 
 An uninitialised pointer to a remote ZIP file.
 
-- `RemoteZipPointer({ url: URL, additionalHeaders?: Headers, method = "GET", credentials = "same-origin" } )`
+- `RemoteZipPointer({ url: URL, additionalHeaders?: Headers, method = "GET", credentials = "same-origin", headUrl?: URL } )`
 
 - `RemoteZipPointer.populate(): Promise<RemoteZip>`
 
   Get an initialised `RemoteZip` object.
+
+  - `headUrl` URL for HEAD request. Defaults to `url`. This can, for example, differ from `url` if you are using a signed URL for S3.
 
   Throws `RemoteZipError` if it fails to parse or fetch.
 

@@ -5,13 +5,13 @@ import { Server } from "http";
 
 describe("RemoteZip integration tests", () => {
   let server: Server;
-  const url = new URL("http://127.0.0.1:8081/test.zip");
+  const url = new URL("http://127.0.0.1:9875/test.zip");
 
   beforeAll(() => {
     server = hs.createServer({
       root: "fixtures",
     });
-    server.listen(8081, "127.0.0.1");
+    server.listen(9875, "127.0.0.1");
   });
 
   afterAll(() => {
@@ -42,7 +42,7 @@ describe("RemoteZip integration tests", () => {
           method: "POST",
         }).populate()
       ).rejects.toThrow(
-        "Could not fetch remote ZIP at http://127.0.0.1:8081/test.zip: HTTP status 405"
+        "Could not fetch remote ZIP at http://127.0.0.1:9875/test.zip: HTTP status 405"
       );
     });
 

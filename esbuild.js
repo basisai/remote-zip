@@ -4,17 +4,19 @@
 const esbuild = require("esbuild");
 
 // Build esm
-esbuild.build({
-  entryPoints: ["src/index.ts"],
-  outdir: "lib/esm",
-  bundle: true,
-  sourcemap: true,
-  minify: true,
-  splitting: true,
-  format: "esm",
-  target: ["esnext"],
-  watch: process.env["WATCH"] === "1",
-});
+esbuild
+  .build({
+    entryPoints: ["src/index.ts"],
+    outdir: "lib/esm",
+    bundle: true,
+    sourcemap: true,
+    minify: true,
+    splitting: true,
+    format: "esm",
+    target: ["esnext"],
+    watch: process.env["WATCH"] === "1",
+  })
+  .catch(() => process.exit(1));
 
 // Build cjs
 esbuild

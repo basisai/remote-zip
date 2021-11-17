@@ -244,11 +244,15 @@ export class RemoteZip {
     method,
     credentials = "same-origin",
   }: {
+    /** Length of the remote zip file in bytes */
     contentLength: number;
+    /** Passed to fetch when doing a GET for the file */
     url: URL;
     centralDirectoryRecords: CentralDirectoryRecord[];
     endOfCentralDirectory: EndOfCentralDirectory | null;
+    /** Passed to fetch when doing a GET for the file */
     method: string;
+    /** Passed to fetch when doing a GET for the file */
     credentials: "include" | "omit" | "same-origin";
   }) {
     this.contentLength = contentLength;
@@ -339,29 +343,38 @@ export class RemoteZip {
  */
 export class RemoteZipPointer {
   url: URL;
+  headUrl: URL;
   additionalHeaders?: Headers;
   method: string;
   credentials: "include" | "omit" | "same-origin";
 
   constructor({
     url,
+    headUrl,
     additionalHeaders,
     method = "GET",
     credentials = "same-origin",
   }: {
+    /** URL for GET requests */
     url: URL;
+    /** Passed to fetch when doing a GET for the file */
     additionalHeaders?: Headers;
+    /** Passed to fetch when doing a GET for the file */
     method?: string;
+    /** Passed to fetch when doing a GET for the file */
     credentials?: "include" | "omit" | "same-origin";
+    /** URL for HEAD request. Defaults to `url`. This can, for example, differ from `url` if you are using a signed URL for S3. */
+    headUrl?: URL;
   }) {
     this.url = url;
+    this.headUrl = headUrl ?? url;
     this.additionalHeaders = additionalHeaders;
     this.method = method;
     this.credentials = credentials;
   }
 
   public async populate(): Promise<RemoteZip> {
-    const res = await fetch(this.url.toString(), {
+    const res = await fetch(this.headUrl.toString(), {
       method: "HEAD",
       headers: this.additionalHeaders,
       redirect: "follow",
