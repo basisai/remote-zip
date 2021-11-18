@@ -1,0 +1,112 @@
+<!DOCTYPE html><html class="default"><head><meta charSet="utf-8"/><meta http-equiv="x-ua-compatible" content="IE=edge"/><title>@basisai/remote-zip</title><meta name="description" content="Documentation for @basisai/remote-zip"/><meta name="viewport" content="width=device-width, initial-scale=1"/><link rel="stylesheet" href="assets/style.css"/><link rel="stylesheet" href="assets/highlight.css"/><script async src="assets/search.js" id="search-script"></script></head><body><script>document.body.classList.add(localStorage.getItem("tsd-theme") || "os")</script><header><div class="tsd-page-toolbar"><div class="container"><div class="table-wrap"><div class="table-cell" id="tsd-search" data-base="."><div class="field"><label for="tsd-search-field" class="tsd-widget search no-caption">Search</label><input type="text" id="tsd-search-field"/></div><ul class="results"><li class="state loading">Preparing search index...</li><li class="state failure">The search index is not available</li></ul><a href="index.html" class="title">@basisai/remote-zip</a></div><div class="table-cell" id="tsd-widgets"><div id="tsd-filter"><a href="#" class="tsd-widget options no-caption" data-toggle="options">Options</a><div class="tsd-filter-group"><div class="tsd-select" id="tsd-filter-visibility"><span class="tsd-select-label">All</span><ul class="tsd-select-list"><li data-value="public">Public</li><li data-value="protected">Public/Protected</li><li data-value="private" class="selected">All</li></ul></div> <input type="checkbox" id="tsd-filter-inherited" checked/><label class="tsd-widget" for="tsd-filter-inherited">Inherited</label><input type="checkbox" id="tsd-filter-externals" checked/><label class="tsd-widget" for="tsd-filter-externals">Externals</label></div></div><a href="#" class="tsd-widget menu no-caption" data-toggle="menu">Menu</a></div></div></div></div><div class="tsd-page-title"><div class="container"><h1>@basisai/remote-zip</h1></div></div></header><div class="container container-main"><div class="row"><div class="col-8 col-content"><div class="tsd-panel tsd-typography">
+<a href="#remote-zip" id="remote-zip" style="color: inherit; text-decoration: none;">
+  <h1>remote-zip</h1>
+</a>
+<p>Fetch file listings and individual files from a remote ZIP file.</p>
+<ul>
+<li><a href="https://basisai.github.io/remote-zip">API</a></li>
+</ul>
+
+<a href="#features" id="features" style="color: inherit; text-decoration: none;">
+  <h2>Features</h2>
+</a>
+<p>Without downloading the entire ZIP:</p>
+<ul>
+<li>Fetch individual files in a remote ZIP</li>
+<li>Fetch file listings</li>
+</ul>
+<p>The gist of what the library does is:</p>
+<ol>
+<li>Get the content size of the ZIP file using a HTTP HEAD request.</li>
+<li>Get the last 100 bytes using HTTP Range queries (hoping it&#39;s enough) to read the end-of-central-directory (EOCD) section.</li>
+<li>Using the EOCD, read the central directory (CD) section with a Range request. This section contains a complete file listing and file byte offsets in the ZIP.</li>
+<li>To get individual files, use another Range request with an offset to get the local file header + compressed data.</li>
+</ol>
+
+<a href="#limitations" id="limitations" style="color: inherit; text-decoration: none;">
+  <h2>Limitations</h2>
+</a>
+<ul>
+<li>No ZIP64 support</li>
+<li>No encrypted ZIP support</li>
+<li>No stream support via <code>ReadableStream</code> due to testing/dev difficulties</li>
+<li>Long comments in a ZIP file might cause <code>populate()</code> to fail</li>
+</ul>
+
+<a href="#install" id="install" style="color: inherit; text-decoration: none;">
+  <h2>Install</h2>
+</a>
+<pre><code class="language-bash"><span class="hl-0">yarn add @basisai/remote-zip</span>
+</code></pre>
+<pre><code class="language-bash"><span class="hl-0">npm install --save @basisai/remote-zip</span>
+</code></pre>
+
+<a href="#usage" id="usage" style="color: inherit; text-decoration: none;">
+  <h2>Usage</h2>
+</a>
+<p>See <a href="docs/api.md">docs/api.md</a> for API documentation.</p>
+<p>If using in the browser, the server will need to whitelist CORS for <code>GET</code>, <code>HEAD</code>, and the <code>Range</code> header.</p>
+
+<a href="#basic" id="basic" style="color: inherit; text-decoration: none;">
+  <h3>Basic</h3>
+</a>
+<pre><code class="language-ts"><span class="hl-1">const</span><span class="hl-0"> </span><span class="hl-2">url</span><span class="hl-0"> = </span><span class="hl-1">new</span><span class="hl-0"> </span><span class="hl-3">URL</span><span class="hl-0">(</span><span class="hl-4">&quot;http://www.example.com/test.zip&quot;</span><span class="hl-0">);</span><br/><span class="hl-1">const</span><span class="hl-0"> </span><span class="hl-2">remoteZip</span><span class="hl-0"> = </span><span class="hl-5">await</span><span class="hl-0"> </span><span class="hl-1">new</span><span class="hl-0"> </span><span class="hl-3">RemoteZipPointer</span><span class="hl-0">({ </span><span class="hl-6">url</span><span class="hl-0"> }).</span><span class="hl-3">populate</span><span class="hl-0">();</span><br/><span class="hl-1">const</span><span class="hl-0"> </span><span class="hl-2">fileListing</span><span class="hl-0"> = </span><span class="hl-6">remoteZip</span><span class="hl-0">.</span><span class="hl-3">files</span><span class="hl-0">(); </span><span class="hl-7">// RemoteZipFile[]</span><br/><span class="hl-1">const</span><span class="hl-0"> </span><span class="hl-2">uncompressedBytes</span><span class="hl-0"> = </span><span class="hl-5">await</span><span class="hl-0"> </span><span class="hl-6">remoteZip</span><span class="hl-0">.</span><span class="hl-3">fetch</span><span class="hl-0">(</span><span class="hl-4">&quot;test.txt&quot;</span><span class="hl-0">); </span><span class="hl-7">// ArrayBuffer</span>
+</code></pre>
+
+<a href="#with-more-features" id="with-more-features" style="color: inherit; text-decoration: none;">
+  <h3>With more features</h3>
+</a>
+<pre><code class="language-ts"><span class="hl-1">const</span><span class="hl-0"> </span><span class="hl-2">method</span><span class="hl-0"> = </span><span class="hl-4">&quot;POST&quot;</span><span class="hl-0">;</span><br/><span class="hl-1">const</span><span class="hl-0"> </span><span class="hl-2">additonalHeaders</span><span class="hl-0"> = </span><span class="hl-1">new</span><span class="hl-0"> </span><span class="hl-3">Headers</span><span class="hl-0">();</span><br/><span class="hl-6">additonalHeaders</span><span class="hl-0">.</span><span class="hl-3">append</span><span class="hl-0">(</span><span class="hl-4">&quot;X-Example&quot;</span><span class="hl-0">, </span><span class="hl-4">&quot;foobar&quot;</span><span class="hl-0">);</span><br/><span class="hl-1">const</span><span class="hl-0"> </span><span class="hl-2">url</span><span class="hl-0"> = </span><span class="hl-1">new</span><span class="hl-0"> </span><span class="hl-3">URL</span><span class="hl-0">(</span><span class="hl-4">&quot;http://www.example.com/test.zip&quot;</span><span class="hl-0">);</span><br/><span class="hl-1">const</span><span class="hl-0"> </span><span class="hl-2">remoteZip</span><span class="hl-0"> = </span><span class="hl-5">await</span><span class="hl-0"> </span><span class="hl-1">new</span><span class="hl-0"> </span><span class="hl-3">RemoteZipPointer</span><span class="hl-0">({</span><br/><span class="hl-0">  </span><span class="hl-6">url</span><span class="hl-0">,</span><br/><span class="hl-0">  </span><span class="hl-6">additionalHeaders</span><span class="hl-0">,</span><br/><span class="hl-0">  </span><span class="hl-6">method</span><span class="hl-0">,</span><br/><span class="hl-0">  </span><span class="hl-6">credentials:</span><span class="hl-0"> </span><span class="hl-4">&quot;include&quot;</span><span class="hl-0">,</span><br/><span class="hl-0">}).</span><span class="hl-3">populate</span><span class="hl-0">();</span><br/><span class="hl-1">const</span><span class="hl-0"> </span><span class="hl-2">uncompressedBytes</span><span class="hl-0"> = </span><span class="hl-5">await</span><span class="hl-0"> </span><span class="hl-6">remoteZip</span><span class="hl-0">.</span><span class="hl-3">fetch</span><span class="hl-0">(</span><span class="hl-4">&quot;test.txt&quot;</span><span class="hl-0">, </span><span class="hl-6">additionalHeaders</span><span class="hl-0">);</span>
+</code></pre>
+
+<a href="#dev" id="dev" style="color: inherit; text-decoration: none;">
+  <h2>Dev</h2>
+</a>
+<details>
+<summary>Dev instructions</summary>
+See `scripts` in `package.json` for more scripts.
+
+<ul>
+<li><code>yarn d</code> watch and build</li>
+<li><code>yarn t:watch</code> watch and test</li>
+<li><code>yarn lint</code></li>
+<li><code>yarn build</code></li>
+</ul>
+<p>Run tests and checks with Docker</p>
+<pre><code><span class="hl-6">docker</span><span class="hl-0">-</span><span class="hl-6">compose</span><span class="hl-0"> -</span><span class="hl-6">f</span><span class="hl-0"> </span><span class="hl-6">docker</span><span class="hl-0">-</span><span class="hl-6">compose</span><span class="hl-0">.</span><span class="hl-6">test</span><span class="hl-0">.</span><span class="hl-6">yml</span><span class="hl-0"> </span><span class="hl-6">up</span><span class="hl-0"> --</span><span class="hl-6">build</span>
+</code></pre>
+
+<a href="#publish" id="publish" style="color: inherit; text-decoration: none;">
+  <h3>Publish</h3>
+</a>
+
+<a href="#setup" id="setup" style="color: inherit; text-decoration: none;">
+  <h4>Setup</h4>
+</a>
+<ol>
+<li><p>Get an automation token from npm under settings</p>
+<pre><code><span class="hl-8">https</span><span class="hl-0">:</span><span class="hl-7">//www.npmjs.com/settings/aicadium/tokens/</span>
+</code></pre>
+</li>
+<li><p>Add the token to your repository secrets.</p>
+<pre><code><span class="hl-8">https</span><span class="hl-0">:</span><span class="hl-7">//github.com/$YOUR_USERNAME/$YOUR_REPO_NAME/settings/secrets/actions/new</span>
+</code></pre>
+<ul>
+<li>Name: <code>NPM_TOKEN</code></li>
+<li>Value: The automation token you got from the previous step</li>
+</ul>
+</li>
+</ol>
+
+<a href="#run" id="run" style="color: inherit; text-decoration: none;">
+  <h4>Run</h4>
+</a>
+<ol>
+<li><p>Create a new release.</p>
+<pre><code><span class="hl-8">https</span><span class="hl-0">:</span><span class="hl-7">//github.com/$YOUR_USERNAME/$YOUR_REPO_NAME/releases</span>
+</code></pre>
+<p>The workflow at <code>./github/workflows/publish.yml</code> should run and publish your packages to both NPM and GitHub Packages.</p>
+<p>Don&#39;t forget to bump your version number in <code>package.json</code> before this.</p>
+</details></li>
+</ol>
+</div></div><div class="col-4 col-menu menu-sticky-wrap menu-highlight"><nav class="tsd-navigation primary"><ul><li class="current"><a href="modules.html">Exports</a></li></ul></nav><nav class="tsd-navigation secondary menu-sticky"><ul><li class="tsd-kind-class"><a href="classes/RemoteZip.html" class="tsd-kind-icon">Remote<wbr/>Zip</a></li><li class="tsd-kind-class"><a href="classes/RemoteZipError.html" class="tsd-kind-icon">Remote<wbr/>Zip<wbr/>Error</a></li><li class="tsd-kind-class"><a href="classes/RemoteZipPointer.html" class="tsd-kind-icon">Remote<wbr/>Zip<wbr/>Pointer</a></li><li class="tsd-kind-interface"><a href="interfaces/CentralDirectoryRecord.html" class="tsd-kind-icon">Central<wbr/>Directory<wbr/>Record</a></li><li class="tsd-kind-interface"><a href="interfaces/EndOfCentralDirectory.html" class="tsd-kind-icon">End<wbr/>Of<wbr/>Central<wbr/>Directory</a></li><li class="tsd-kind-interface"><a href="interfaces/LocalFileHeader.html" class="tsd-kind-icon">Local<wbr/>File<wbr/>Header</a></li><li class="tsd-kind-interface"><a href="interfaces/RemoteZipFile.html" class="tsd-kind-icon">Remote<wbr/>Zip<wbr/>File</a></li></ul></nav></div></div></div><footer class="with-border-bottom"><div class="container"><h2>Legend</h2><div class="tsd-legend-group"><ul class="tsd-legend"><li class="tsd-kind-constructor tsd-parent-kind-class"><span class="tsd-kind-icon">Constructor</span></li><li class="tsd-kind-property tsd-parent-kind-class"><span class="tsd-kind-icon">Property</span></li><li class="tsd-kind-method tsd-parent-kind-class"><span class="tsd-kind-icon">Method</span></li></ul><ul class="tsd-legend"><li class="tsd-kind-property tsd-parent-kind-interface"><span class="tsd-kind-icon">Property</span></li></ul></div><h2>Settings</h2><p>Theme <select id="theme"><option value="os">OS</option><option value="light">Light</option><option value="dark">Dark</option></select></p></div></footer><div class="container tsd-generator"><p>Generated using <a href="https://typedoc.org/" target="_blank">TypeDoc</a></p></div><div class="overlay"></div><script src="assets/main.js"></script></body></html>

@@ -1,0 +1,114 @@
+<!DOCTYPE html><html class="default"><head><meta charSet="utf-8"/><meta http-equiv="x-ua-compatible" content="IE=edge"/><title>CentralDirectoryRecord | @basisai/remote-zip</title><meta name="description" content="Documentation for @basisai/remote-zip"/><meta name="viewport" content="width=device-width, initial-scale=1"/><link rel="stylesheet" href="../assets/style.css"/><link rel="stylesheet" href="../assets/highlight.css"/><script async src="../assets/search.js" id="search-script"></script></head><body><script>document.body.classList.add(localStorage.getItem("tsd-theme") || "os")</script><header><div class="tsd-page-toolbar"><div class="container"><div class="table-wrap"><div class="table-cell" id="tsd-search" data-base=".."><div class="field"><label for="tsd-search-field" class="tsd-widget search no-caption">Search</label><input type="text" id="tsd-search-field"/></div><ul class="results"><li class="state loading">Preparing search index...</li><li class="state failure">The search index is not available</li></ul><a href="../index.html" class="title">@basisai/remote-zip</a></div><div class="table-cell" id="tsd-widgets"><div id="tsd-filter"><a href="#" class="tsd-widget options no-caption" data-toggle="options">Options</a><div class="tsd-filter-group"><div class="tsd-select" id="tsd-filter-visibility"><span class="tsd-select-label">All</span><ul class="tsd-select-list"><li data-value="public">Public</li><li data-value="protected">Public/Protected</li><li data-value="private" class="selected">All</li></ul></div> <input type="checkbox" id="tsd-filter-inherited" checked/><label class="tsd-widget" for="tsd-filter-inherited">Inherited</label><input type="checkbox" id="tsd-filter-externals" checked/><label class="tsd-widget" for="tsd-filter-externals">Externals</label></div></div><a href="#" class="tsd-widget menu no-caption" data-toggle="menu">Menu</a></div></div></div></div><div class="tsd-page-title"><div class="container"><ul class="tsd-breadcrumb"><li><a href="../modules.html">@basisai/remote-zip</a></li><li><a href="CentralDirectoryRecord.html">CentralDirectoryRecord</a></li></ul><h1>Interface CentralDirectoryRecord</h1></div></div></header><div class="container container-main"><div class="row"><div class="col-8 col-content"><section class="tsd-panel tsd-hierarchy"><h3>Hierarchy</h3><ul class="tsd-hierarchy"><li><span class="target">CentralDirectoryRecord</span></li></ul></section><section class="tsd-panel-group tsd-index-group"><h2>Index</h2><section class="tsd-panel tsd-index-panel"><div class="tsd-index-content"><section class="tsd-index-section "><h3>Properties</h3><ul class="tsd-index-list"><li class="tsd-kind-property tsd-parent-kind-interface"><a href="CentralDirectoryRecord.html#data" class="tsd-kind-icon">data</a></li><li class="tsd-kind-property tsd-parent-kind-interface"><a href="CentralDirectoryRecord.html#meta" class="tsd-kind-icon">meta</a></li></ul></section></div></section></section><section class="tsd-panel-group tsd-member-group "><h2>Properties</h2><section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface"><a id="data" class="tsd-anchor"></a><h3>data</h3><div class="tsd-signature tsd-kind-icon">data<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">{ </span>compressedSize<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">; </span>compressionMethod<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">; </span>crc32<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">; </span>externalFileAttributes<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">; </span>extraField<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">ArrayBuffer</span><span class="tsd-signature-symbol">; </span>extraFieldLength<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">; </span>fileComment<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">; </span>fileCommentLength<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">; </span>filename<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">; </span>filenameLength<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">; </span>generalPurposeBitFlag<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">; </span>internalFileAttributes<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">; </span>lastModifiedDate<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">; </span>lastModifiedTime<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">; </span>localFileHeaderRelativeOffset<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">; </span>signature<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">ArrayBuffer</span><span class="tsd-signature-symbol">; </span>startingDiskNumber<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">; </span>uncompressedSize<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">; </span>versionMadeBy<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">; </span>versionToExtract<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol"> }</span></div><aside class="tsd-sources"><ul><li>Defined in src/zip.ts:49</li></ul></aside><div class="tsd-type-declaration"><h4>Type declaration</h4><ul class="tsd-parameters"><li class="tsd-parameter"><h5>compressed<wbr/>Size<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span></h5><div class="tsd-comment tsd-typography"><div class="lead">
+<p>Compressed size (or 0xffffffff for ZIP64)</p>
+</div></div></li><li class="tsd-parameter"><h5>compression<wbr/>Method<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span></h5><div class="tsd-comment tsd-typography"><div class="lead">
+<p>Compression method; e.g. none = 0, DEFLATE = 8 (or &quot;\0x08\0x00&quot;)</p>
+</div><div><ul>
+<li>00: no compression</li>
+<li>01: shrunk</li>
+<li>02: reduced with compression factor 1</li>
+<li>03: reduced with compression factor 2</li>
+<li>04: reduced with compression factor 3</li>
+<li>05: reduced with compression factor 4</li>
+<li>06: imploded</li>
+<li>07: reserved</li>
+<li>08: deflated</li>
+<li>09: enhanced deflated</li>
+<li>10: PKWare DCL imploded</li>
+<li>11: reserved</li>
+<li>12: compressed using BZIP2</li>
+<li>13: reserved</li>
+<li>14: LZMA</li>
+<li>15-17: reserved</li>
+<li>18: compressed using IBM TERSE</li>
+<li>19: IBM LZ77 z</li>
+<li>98: PPMd version I, Rev 1</li>
+</ul>
+</div></div></li><li class="tsd-parameter"><h5>crc32<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span></h5><div class="tsd-comment tsd-typography"><div class="lead">
+<p>CRC-32 of uncompressed data
+Value computed over file data by CRC-32 algorithm with
+&#39;magic number&#39; 0xdebb20e3 (little endian)</p>
+</div></div></li><li class="tsd-parameter"><h5>external<wbr/>File<wbr/>Attributes<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span></h5><div class="tsd-comment tsd-typography"><div class="lead">
+<p>External file attributes (host-system dependent)</p>
+</div></div></li><li class="tsd-parameter"><h5>extra<wbr/>Field<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">ArrayBuffer</span></h5><div class="tsd-comment tsd-typography"><div class="lead">
+<p>Extra field</p>
+</div><div><p>Used to store additional information. The field consistes of a sequence of
+header and data pairs, where the header has a 2 byte identifier and a 2 byte data size field.</p>
+</div></div></li><li class="tsd-parameter"><h5>extra<wbr/>Field<wbr/>Length<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span></h5><div class="tsd-comment tsd-typography"><div class="lead">
+<p>Extra field length (m)</p>
+</div></div></li><li class="tsd-parameter"><h5>file<wbr/>Comment<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span></h5><div class="tsd-comment tsd-typography"><div class="lead">
+<p>File comment</p>
+</div></div></li><li class="tsd-parameter"><h5>file<wbr/>Comment<wbr/>Length<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span></h5><div class="tsd-comment tsd-typography"><div class="lead">
+<p>File comment length (k)</p>
+</div></div></li><li class="tsd-parameter"><h5>filename<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span></h5><div class="tsd-comment tsd-typography"><div class="lead">
+<p>File name</p>
+</div></div></li><li class="tsd-parameter"><h5>filename<wbr/>Length<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span></h5><div class="tsd-comment tsd-typography"><div class="lead">
+<p>File name length (n)</p>
+</div></div></li><li class="tsd-parameter"><h5>general<wbr/>Purpose<wbr/>Bit<wbr/>Flag<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span></h5><div class="tsd-comment tsd-typography"><div class="lead">
+<p>General purpose bit flag</p>
+</div><div><ul>
+<li>Bit 00: encrypted file</li>
+<li>Bit 01: compression option</li>
+<li>Bit 02: compression option</li>
+<li>Bit 03: data descriptor</li>
+<li>Bit 04: enhanced deflation</li>
+<li>Bit 05: compressed patched data</li>
+<li>Bit 06: strong encryption</li>
+<li>Bit 07-10: unused</li>
+<li>Bit 11: language encoding</li>
+<li>Bit 12: reserved</li>
+<li>Bit 13: mask header values</li>
+<li>Bit 14-15: reserved</li>
+</ul>
+</div></div></li><li class="tsd-parameter"><h5>internal<wbr/>File<wbr/>Attributes<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span></h5><div class="tsd-comment tsd-typography"><div class="lead">
+<p>Internal file attributes</p>
+</div><div><p>Bit 0: apparent ASCII/text file
+Bit 1: reserved
+Bit 2: control field records precede logical records
+Bits 3-16: unused</p>
+</div></div></li><li class="tsd-parameter"><h5>last<wbr/>Modified<wbr/>Date<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span></h5><div class="tsd-comment tsd-typography"><div class="lead">
+<p>File last modification date (DOS)</p>
+</div></div></li><li class="tsd-parameter"><h5>last<wbr/>Modified<wbr/>Time<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span></h5><div class="tsd-comment tsd-typography"><div class="lead">
+<p>File last modification time (DOS)</p>
+</div></div></li><li class="tsd-parameter"><h5>local<wbr/>File<wbr/>Header<wbr/>Relative<wbr/>Offset<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span></h5><div class="tsd-comment tsd-typography"><div class="lead">
+<p>Relative offset of local file header.
+This is the number of bytes between the start of the first
+disk on which the file occurs, and the start of the local file
+header. This allows software reading the central directory to
+locate the position of the file inside the ZIP file.</p>
+</div></div></li><li class="tsd-parameter"><h5>signature<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">ArrayBuffer</span></h5><div class="tsd-comment tsd-typography"><div class="lead">
+<p>Central directory file header signature = 0x02014b50</p>
+</div></div></li><li class="tsd-parameter"><h5>starting<wbr/>Disk<wbr/>Number<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span></h5><div class="tsd-comment tsd-typography"><div class="lead">
+<p>Disk number where file starts</p>
+</div></div></li><li class="tsd-parameter"><h5>uncompressed<wbr/>Size<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span></h5><div class="tsd-comment tsd-typography"><div class="lead">
+<p>Uncompressed size (or 0xffffffff for ZIP64)</p>
+</div></div></li><li class="tsd-parameter"><h5>version<wbr/>Made<wbr/>By<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span></h5><div class="tsd-comment tsd-typography"><div class="lead">
+<p>Version of the program this ZIP was made by.</p>
+</div><div><p>Upper byte:</p>
+<ul>
+<li>0 - MS-DOS and OS/2 (FAT / VFAT / FAT32 file systems)</li>
+<li>1 - Amiga</li>
+<li>2 - OpenVMS</li>
+<li>3 - UNIX</li>
+<li>4 - VM/CMS</li>
+<li>5 - Atari ST</li>
+<li>6 - OS/2 H.P.F.S.</li>
+<li>7 - Macintosh</li>
+<li>8 - Z-System</li>
+<li>9 - CP/M</li>
+<li>10 - Windows NTFS</li>
+<li>11 - MVS (OS/390 - Z/OS)</li>
+<li>12 - VSE</li>
+<li>13 - Acorn Risc</li>
+<li>14 - VFAT</li>
+<li>15 - alternate MVS</li>
+<li>16 - BeOS</li>
+<li>17 - Tandem</li>
+<li>18 - OS/400</li>
+<li>19 - OS/X (Darwin)</li>
+<li>20 - 255: Unused</li>
+</ul>
+</div></div></li><li class="tsd-parameter"><h5>version<wbr/>To<wbr/>Extract<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span></h5><div class="tsd-comment tsd-typography"><div class="lead">
+<p>Version needed to extract (minimum)</p>
+</div></div></li></ul></div></section><section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface"><a id="meta" class="tsd-anchor"></a><h3>meta</h3><div class="tsd-signature tsd-kind-icon">meta<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">{ </span>length<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol"> }</span></div><aside class="tsd-sources"><ul><li>Defined in src/zip.ts:45</li></ul></aside><div class="tsd-type-declaration"><h4>Type declaration</h4><ul class="tsd-parameters"><li class="tsd-parameter"><h5>length<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span></h5><div class="tsd-comment tsd-typography"><div class="lead">
+<p>Length of the entire record</p>
+</div></div></li></ul></div></section></section></div><div class="col-4 col-menu menu-sticky-wrap menu-highlight"><nav class="tsd-navigation primary"><ul><li class=""><a href="../modules.html">Exports</a></li></ul></nav><nav class="tsd-navigation secondary menu-sticky"><ul><li class="current tsd-kind-interface"><a href="CentralDirectoryRecord.html" class="tsd-kind-icon">Central<wbr/>Directory<wbr/>Record</a><ul><li class="tsd-kind-property tsd-parent-kind-interface"><a href="CentralDirectoryRecord.html#data" class="tsd-kind-icon">data</a></li><li class="tsd-kind-property tsd-parent-kind-interface"><a href="CentralDirectoryRecord.html#meta" class="tsd-kind-icon">meta</a></li></ul></li></ul></nav></div></div></div><footer class="with-border-bottom"><div class="container"><h2>Legend</h2><div class="tsd-legend-group"><ul class="tsd-legend"><li class="tsd-kind-constructor tsd-parent-kind-class"><span class="tsd-kind-icon">Constructor</span></li><li class="tsd-kind-property tsd-parent-kind-class"><span class="tsd-kind-icon">Property</span></li><li class="tsd-kind-method tsd-parent-kind-class"><span class="tsd-kind-icon">Method</span></li></ul><ul class="tsd-legend"><li class="tsd-kind-property tsd-parent-kind-interface"><span class="tsd-kind-icon">Property</span></li></ul></div><h2>Settings</h2><p>Theme <select id="theme"><option value="os">OS</option><option value="light">Light</option><option value="dark">Dark</option></select></p></div></footer><div class="container tsd-generator"><p>Generated using <a href="https://typedoc.org/" target="_blank">TypeDoc</a></p></div><div class="overlay"></div><script src="../assets/main.js"></script></body></html>
