@@ -1,0 +1,10 @@
+version: "3"
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile.docs
+      args:
+        NODE_ENV: production
+    volumes:
+      - ./docs:/usr/src/app/docs:rw

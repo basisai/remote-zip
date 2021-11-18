@@ -2,7 +2,7 @@
 
 Fetch file listings and individual files from a remote ZIP file.
 
-- [API](docs/api.md)
+- [API](https://basisai.github.io/remote-zip)
 
 ## Features
 

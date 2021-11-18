@@ -10,7 +10,7 @@ const SIG_LOCAL_FILE_HEADER = 0x504b0304;
 const SIG_EOCD = 0x504b0506;
 const SIG_DATA_DESCRIPTOR = 0x504b0708;
 
-class RemoteZipError extends Error {
+export class RemoteZipError extends Error {
   constructor(message) {
     super(message);
     this.name = this.constructor.name;
@@ -218,9 +218,13 @@ export interface LocalFileHeader {
   };
 }
 
+/**
+ * A friendly representation of a file inside a ZIP archive
+ */
 export interface RemoteZipFile {
+  /** Full path of the file inside the archive */
   filename: string;
-  /** bytes */
+  /** Size in bytes */
   size: number;
   /** ISO timestamp without timezone (ZIP/DOS does not preserve timezones) */
   modified: string;
@@ -228,12 +232,30 @@ export interface RemoteZipFile {
   attributes: number;
 }
 
+/**
+ * An initialised object representating a remote ZIP archive.
+ *
+ * Best constructed from a `RemoteZipPointer`.
+ *
+ * ```ts
+ * import { RemoteZipPointer } from "remote-zip";
+ *
+ * const url = new URL("http://www.example.com/test.zip");
+ * const remoteZip = await new RemoteZipPointer({ url }).populate();
+ * ```
+ */
 export class RemoteZip {
+  /** Size of the remote ZIP archive in bytes */
   contentLength: number;
+  /** URL of the remote ZIP archive */
   url: URL;
+  /** Records representing the files in the remote ZIP archive */
   centralDirectoryRecords: CentralDirectoryRecord[];
+  /** Metadata of the remote ZIP archive */
   endOfCentralDirectory: EndOfCentralDirectory | null;
+  /** HTTP method used to fetch files from the remote ZIP archive */
   method: string;
+  /** Credentials passed to `fetch` when retrieving files. Defaults to `same-origin`. */
   credentials: "include" | "omit" | "same-origin";
 
   constructor({
@@ -244,15 +266,15 @@ export class RemoteZip {
     method,
     credentials = "same-origin",
   }: {
-    /** Length of the remote zip file in bytes */
+    /** Length of the remote ZIP archive in bytes */
     contentLength: number;
-    /** Passed to fetch when doing a GET for the file */
+    /** Passed to fetch when performing a HTTP GET request for the file */
     url: URL;
     centralDirectoryRecords: CentralDirectoryRecord[];
     endOfCentralDirectory: EndOfCentralDirectory | null;
-    /** Passed to fetch when doing a GET for the file */
+    /** Passed to fetch when performing a HTTP GET request for the file */
     method: string;
-    /** Passed to fetch when doing a GET for the file */
+    /** Passed to fetch when performing a HTTP GET request for the file. */
     credentials: "include" | "omit" | "same-origin";
   }) {
     this.contentLength = contentLength;
@@ -263,6 +285,20 @@ export class RemoteZip {
     this.credentials = credentials;
   }
 
+  /**
+   * Get a formatted file listing of the remote ZIP archive.
+   *
+   * @returns List of files in the remote ZIP archive.
+   *
+   * ```ts
+   * import { RemoteZipPointer } from "remote-zip";
+   *
+   * const url = new URL("http://www.example.com/test.zip");
+   * const remoteZip = await new RemoteZipPointer({ url }).populate();
+   * const files = remoteZip.files();
+   * // files = [{ attributes: 1107099648, filename: "text.txt", modified: "2021-06-17T12:28:02", size: 14 }]
+   * ```
+   */
   public files(): RemoteZipFile[] {
     return this.centralDirectoryRecords.map((r) => ({
       filename: r.data.filename,
@@ -275,16 +311,24 @@ export class RemoteZip {
     }));
   }
 
-  /** Gets a single uncompressed file in the remote ZIP. */
-  // TODO: Return a ReadableStream instead of an ArrayBuffer so we don't need
-  // to download the entire thing (to show video previews, for example)
-  // Can't use WHATWG ReadableStream in node, so we avoid using streams until at least node-fetch v3
-  // When cross-fetch upgrades to node-fetch v3, maybe? Testing is a PITA without it.
-  // https://github.com/node-fetch/node-fetch/blob/main/docs/v3-LIMITS.md
+  /**
+   * Gets a single uncompressed file in the remote ZIP archive.
+   *
+   * @param path Path of the file in the remote ZIP archive
+   * @param additionalHeaders Additional headers, if any, to be passed to the `fetch` request
+   * @returns Inflated (uncompressed) bytes of the requested file
+   * @throws [RemoteZipError](RemoteZipError) if it fails to parse or fetch
+   */
   public async fetch(
     path: string,
     additionalHeaders?: Headers
   ): Promise<ArrayBuffer> {
+    // TODO: Return a ReadableStream instead of an ArrayBuffer so we don't need
+    // to download the entire thing (to show video previews, for example)
+    // Can't use WHATWG ReadableStream in node, so we avoid using streams until at least node-fetch v3
+    // When cross-fetch upgrades to node-fetch v3, maybe? Testing is a PITA without it.
+    // https://github.com/node-fetch/node-fetch/blob/main/docs/v3-LIMITS.md
+
     const file = this.centralDirectoryRecords.find(
       (r) => r.data.filename === path
     );
@@ -339,13 +383,27 @@ export class RemoteZip {
 }
 
 /**
- * Pointer to a remote zip file at a url. To get a concrete remote zip file, call `myPointer.populate()`.
+ * An uninitialised pointer to a remote ZIP file.
+ *
+ * No network requests are sent until `populate()` is called.
+ *
+ * ```ts
+ * const url = new URL("http://www.example.com/test.zip");
+ * const remoteZip = await new RemoteZipPointer({ url }).populate();
+ * const fileListing = remoteZip.files(); // RemoteZipFile[]
+ * const uncompressedBytes = await remoteZip.fetch("test.txt"); // ArrayBuffer
+ * ```
  */
 export class RemoteZipPointer {
+  /** URL of the remote ZIP archive */
   url: URL;
+  /** URL used when performing the HTTP HEAD request to fetch ZIP metadata */
   headUrl: URL;
+  /** Additional headers, if any, passed to `fetch` when calling `url` or `headUrl` */
   additionalHeaders?: Headers;
+  /** HTTP method used to fetch ZIP metadata (the initial HEAD request is always sent) */
   method: string;
+  /** Credentials passed to `fetch` when retrieving files. Defaults to `same-origin`. */
   credentials: "include" | "omit" | "same-origin";
 
   constructor({
@@ -357,11 +415,11 @@ export class RemoteZipPointer {
   }: {
     /** URL for GET requests */
     url: URL;
-    /** Passed to fetch when doing a GET for the file */
+    /** Passed to fetch when performing a HTTP GET request for the file */
     additionalHeaders?: Headers;
-    /** Passed to fetch when doing a GET for the file */
+    /** Passed to fetch when performing a HTTP GET request for the file */
     method?: string;
-    /** Passed to fetch when doing a GET for the file */
+    /** Passed to fetch when performing a HTTP GET request for the file */
     credentials?: "include" | "omit" | "same-origin";
     /** URL for HEAD request. Defaults to `url`. This can, for example, differ from `url` if you are using a signed URL for S3. */
     headUrl?: URL;
@@ -373,6 +431,12 @@ export class RemoteZipPointer {
     this.credentials = credentials;
   }
 
+  /**
+   * Gets metadata about the ZIP file and constructs an initialised `RemoteZip`.
+   *
+   * @returns An initialised [RemoteZip](RemoteZip)
+   * @throws [RemoteZipError](RemoteZipError) if it fails to parse or fetch
+   */
   public async populate(): Promise<RemoteZip> {
     const res = await fetch(this.headUrl.toString(), {
       method: "HEAD",
