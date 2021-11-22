@@ -1,8 +1,8 @@
 # remote-zip
 
-Fetch file listings and individual files from a remote ZIP file.
+[API documentation](https://basisai.github.io/remote-zip)
 
-- [API](https://basisai.github.io/remote-zip)
+Fetch file listings and individual files from a remote ZIP file.
 
 ## Features
 
@@ -37,7 +37,7 @@ npm install --save @basisai/remote-zip
 
 ## Usage
 
-See [docs/api.md](docs/api.md) for API documentation.
+See the [generated API documentation](https://basisai.github.io/remote-zip/).
 
 If using in the browser, the server will need to whitelist CORS for `GET`, `HEAD`, and the `Range` header.
 
