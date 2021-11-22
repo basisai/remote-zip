@@ -541,11 +541,16 @@ export class RemoteZipPointer {
 }
 
 /**
+ * Parses DOS datetime into an ISO string without timezone.
+ *
+ * @param zipDate DOS date format
+ * @param zipTime DOS time format
+ * @returns An ISO datetime without timezone. Defaults to `"1980-01-01T00:00:00"` if the datetime is invalid
  * @see https://github.com/Stuk/jszip/blob/112fcdb9953c6b9a2744afee451d73029f7cd2f8/lib/reader/DataReader.js#L105
  */
-const parseZipDatetime = (zipDate: number, zipTime: number): string => {
-  const day = zipDate & 0x1f;
-  const month = (zipDate >> 5) & 0x0f;
+export const parseZipDatetime = (zipDate: number, zipTime: number): string => {
+  const day = zipDate & 0x1f || 1;
+  const month = (zipDate >> 5) & 0x0f || 1;
   const year = ((zipDate >> 9) & 0x7f) + 1980;
   const hour = (zipTime >> 11) & 0x1f;
   const minute = (zipTime >> 5) & 0x3f;
@@ -555,9 +560,18 @@ const parseZipDatetime = (zipDate: number, zipTime: number): string => {
 
   // ZIP doesn't have timezones, but JS parses it as UTC with `new Date`.
   // Manually construct an ISO timestamp without timezone to represent this.
-  return `${year}-${pad(month)}-${pad(day)}T${pad(hour)}:${pad(minute)}:${pad(
-    second
-  )}`;
+  const stringFormat = `${year}-${pad(month)}-${pad(day)}T${pad(hour)}:${pad(
+    minute
+  )}:${pad(second)}`;
+
+  try {
+    Date.parse(stringFormat);
+  } catch (e) {
+    // If date is invalid, return 0 instead
+    return parseZipDatetime(0, 0);
+  }
+
+  return stringFormat;
 };
 
 const parseAllCDs = (buffer: ArrayBufferLike): CentralDirectoryRecord[] => {

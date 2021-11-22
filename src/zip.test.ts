@@ -2,6 +2,7 @@ import { RemoteZipPointer } from "./zip";
 
 import * as hs from "http-server";
 import { Server } from "http";
+import { parseZipDatetime } from ".";
 
 describe("RemoteZip integration tests", () => {
   let server: Server;
@@ -92,5 +93,20 @@ describe("RemoteZip integration tests", () => {
         "test-inner.zip"
       );
     });
+  });
+});
+
+describe("parseZipDatetime", () => {
+  it("parses a date safely", () => {
+    expect(parseZipDatetime(0, 0)).toBe("1980-01-01T00:00:00");
+
+    const time = 0x7d1c; // 0111110100011100, 15:40:56
+    const date = 0x354b; // 0011010101001011, 10/11/2006
+    expect(parseZipDatetime(date, time)).toBe("2006-10-11T15:40:56");
+
+    expect(parseZipDatetime(NaN, NaN)).toBe("1980-01-01T00:00:00");
+    expect(parseZipDatetime(0.5, 0.5)).toBe("1980-01-01T00:00:00");
+    expect(parseZipDatetime(Infinity, Infinity)).toBe("1980-01-01T00:00:00");
+    expect(parseZipDatetime(-Infinity, -Infinity)).toBe("1980-01-01T00:00:00");
   });
 });
