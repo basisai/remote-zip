@@ -450,7 +450,8 @@ export class RemoteZipPointer {
     }
     const contentLength = Number.parseInt(contentLengthRaw, 10);
     const endOfCentralDirectory = await this.fetchEndOfCentralDirectory(
-      contentLength
+      contentLength,
+      this.additionalHeaders
     );
     const centralDirectoryRecords = await this.fetchCentralDirectoryRecords(
       endOfCentralDirectory,
