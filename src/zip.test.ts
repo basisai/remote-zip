@@ -1,22 +1,35 @@
 import { RemoteZipPointer } from "./zip";
 
 import * as hs from "http-server";
+import * as http from "http";
 import { Server } from "http";
 import { parseZipDatetime } from ".";
+import { Headers } from "cross-fetch";
 
 describe("RemoteZip integration tests", () => {
   let server: Server;
+  const serverCheck = jest.fn<void, [http.IncomingMessage]>();
   const url = new URL("http://127.0.0.1:9875/test.zip");
 
   beforeAll(() => {
     server = hs.createServer({
       root: "fixtures",
+      before: [
+        (req, res, next) => {
+          serverCheck(req);
+          next();
+        },
+      ],
     });
     server.listen(9875, "127.0.0.1");
   });
 
   afterAll(() => {
     server.close();
+  });
+
+  beforeEach(() => {
+    serverCheck.mockClear();
   });
 
   describe("RemoteZip", () => {
@@ -45,6 +58,21 @@ describe("RemoteZip integration tests", () => {
       ).rejects.toThrow(
         "Could not fetch remote ZIP at http://127.0.0.1:9875/test.zip: HTTP status 405"
       );
+    });
+
+    it("supports passing additional headers", async () => {
+      const additionalHeaders = new Headers();
+      additionalHeaders.append("x-test", "some-value");
+      const remoteZip = await new RemoteZipPointer({
+        url,
+        additionalHeaders,
+      }).populate();
+      await remoteZip.fetch("test.txt", additionalHeaders);
+
+      for (const [request] of serverCheck.mock.calls) {
+        // debug with console.log(request.url) in case of error
+        expect(request).toHaveProperty(["headers", "x-test"]);
+      }
     });
 
     it("provides a friendly listing of files in the zip", async () => {
